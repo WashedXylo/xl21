@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Canopy Protocol - Co-Op Survival</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Three.js Engine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- Firebase App & Realtime Database SDKs (v8) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<body>
+  <!-- 3D Canvas Container -->
+  <div id="game-container"></div>
+
+  <!-- Background Ambient Audio (Copyright-Free Lo-Fi / Synth Ambient) -->
+  <audio id="bgm" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=ambient-classical-guitar-144998.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Login & Session Setup Overlay -->
+  <div id="setup-overlay" class="overlay">
+    <div class="card">
+      <h1>THE CANOPY PROTOCOL</h1>
+      <p>3D Co-Op Survival Simulation</p>
+      
+      <div class="input-group">
+        <label for="username-input">Username:</label>
+        <input type="text" id="username-input" value="Rift" maxlength="16">
+      </div>
+
+      <div class="input-group">
+        <label for="room-id">Friend Room Code (Max 6 Players):</label>
+        <input type="text" id="room-id" value="forest-squad" placeholder="e.g. squad-alpha">
+      </div>
+
+      <div class="input-group">
+        <label for="difficulty-select">Difficulty Level:</label>
+        <select id="difficulty-select">
+          <option value="easy">Easy (Relaxed Exploration)</option>
+          <option value="normal" selected>Normal (Standard Survival)</option>
+          <option value="hard">Hard (Aggressive Mobs & Caller)</option>
+        </select>
+      </div>
+
+      <p class="sub-text">Optional: Paste Firebase Config JSON below for live friend syncing across devices, or play in local host mode.</p>
+      <textarea id="firebase-config-input" placeholder='{"apiKey": "...", "databaseURL": "...", "projectId": "..."}'></textarea>
+      
+      <button id="start-btn" class="btn">Deploy Into Forest</button>
+    </div>
+  </div>
+
+  <!-- HUD & UI Layer -->
+  <div id="hud" class="hidden">
+    <!-- Crosshair -->
+    <div id="crosshair">+</div>
+
+    <!-- Top Status Bar -->
+    <div id="top-bar">
+      <div id="vitals">
+        <div class="stat-bar"><span class="label">HP</span><div class="bar-fill hp" id="hp-bar"></div></div>
+        <div class="stat-bar"><span class="label">STAMINA</span><div class="bar-fill stamina" id="stamina-bar"></div></div>
+        <div class="stat-bar"><span class="label">HUNGER</span><div class="bar-fill hunger" id="hunger-bar"></div></div>
+      </div>
+      <div id="info-panel">
+        <div id="time-display">DAY <span id="day-num">1</span> | <span id="clock">12:00</span></div>
+        <button id="music-toggle-btn" class="hud-btn">🎵 Music: OFF</button>
+      </div>
+    </div>
+
+    <!-- Boss Alert Bar -->
+    <div id="boss-hud" class="hidden">
+      <span id="boss-title">⚠️ THE HAUNTED CALLER (HE WATCHES US) ⚠️</span>
+      <div class="stat-bar boss-hp-bar"><div class="bar-fill boss" id="boss-hp-fill"></div></div>
+    </div>
+
+    <!-- Target Interaction Prompt -->
+    <div id="target-info">
+      <span id="target-name"></span>
+      <span id="target-action" class="sub"></span>
+    </div>
+
+    <!-- Hotbar -->
+    <div id="hotbar-container">
+      <div class="hotbar-slot active" data-slot="1"><span class="slot-num">1</span><span class="icon">🪓</span><span class="count" id="count-axe">1</span></div>
+      <div class="hotbar-slot" data-slot="2"><span class="slot-num">2</span><span class="icon">⛏️</span><span class="count" id="count-pickaxe">1</span></div>
+      <div class="hotbar-slot" data-slot="3"><span class="slot-num">3</span><span class="icon">🪵</span><span class="count" id="count-wood">0</span></div>
+      <div class="hotbar-slot" data-slot="4"><span class="slot-num">4</span><span class="icon">🪨</span><span class="count" id="count-stone">0</span></div>
+      <div class="hotbar-slot" data-slot="5"><span class="slot-num">5</span><span class="icon">🥩</span><span class="count" id="count-food">2</span></div>
+      <div class="hotbar-slot" data-slot="6"><span class="slot-num">6</span><span class="icon">🔥</span><span class="count" id="count-beacon">0</span></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
