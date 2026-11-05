@@ -10,7 +10,7 @@ const CONFIG = {
   dayDurationSec: 300
 };
 
-// Your Firebase Configuration (Hardcoded)
+// Your Hardcoded Firebase Configuration
 const FIREBASE_CREDENTIALS = {
   apiKey: "AIzaSyCBV-K_SIJLrozRZ2v2ZkQSe9tTkHtrL1k",
   authDomain: "forest-game-82fba.firebaseapp.com",
