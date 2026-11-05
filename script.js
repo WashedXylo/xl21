@@ -11,7 +11,7 @@ const CONFIG = {
 };
 
 // Your Hardcoded Firebase Configuration
-const FIREBASE_CREDENTIALS = {
+const firebaseConfig = {
   apiKey: "AIzaSyCBV-K_SIJLrozRZ2v2ZkQSe9tTkHtrL1k",
   authDomain: "forest-game-82fba.firebaseapp.com",
   databaseURL: "https://forest-game-82fba-default-rtdb.asia-southeast1.firebasedatabase.app",
