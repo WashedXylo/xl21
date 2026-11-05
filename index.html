@@ -15,7 +15,7 @@
   <!-- 3D Canvas Container -->
   <div id="game-container"></div>
 
-  <!-- Background Ambient Audio (Copyright-Free Stream)[cite: 1] -->
+  <!-- Background Ambient Audio -->
   <audio id="bgm" loop>
     <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=ambient-classical-guitar-144998.mp3" type="audio/mpeg">
   </audio>
@@ -32,8 +32,8 @@
       </div>
 
       <div class="input-group">
-        <label for="room-id">Friend Room Code (Max 6 Players):</label>
-        <input type="text" id="room-id" value="forest-squad" placeholder="e.g. squad-alpha">
+        <label for="room-id">Join Code (Share with Squad):</label>
+        <input type="text" id="room-id" value="forest-squad" placeholder="Enter squad join code">
       </div>
 
       <div class="input-group">
@@ -62,6 +62,7 @@
         <div class="stat-bar"><span class="label">HUNGER</span><div class="bar-fill hunger" id="hunger-bar"></div></div>
       </div>
       <div id="info-panel">
+        <div id="room-display">CODE: <span id="active-room-code">SQUAD</span></div>
         <div id="time-display">DAY <span id="day-num">1</span> | <span id="clock">12:00</span></div>
         <button id="music-toggle-btn" class="hud-btn">🎵 Music: OFF</button>
       </div>
