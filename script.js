@@ -1,17 +1,17 @@
 /**
  * THE CANOPY PROTOCOL - 3D Fluid Survival Engine
- * Features: Multiplayer (Max 6), Boss "The Haunted Caller", Dynamic Animations, Chopper Extraction
+ * Features: Dense Forest Generation, Join Code Rooms, Multiplayer Sync, Boss Fights
  */
 
 const CONFIG = {
   mapSize: 400,
-  numTrees: 450,
-  numRocks: 180,
+  numTrees: 600,
+  numRocks: 250,
   dayDurationSec: 300
 };
 
-// Your Hardcoded Firebase Configuration
-const firebaseConfig = {
+// Hardcoded Firebase Configuration
+const FIREBASE_CREDENTIALS = {
   apiKey: "AIzaSyCBV-K_SIJLrozRZ2v2ZkQSe9tTkHtrL1k",
   authDomain: "forest-game-82fba.firebaseapp.com",
   databaseURL: "https://forest-game-82fba-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -106,16 +106,18 @@ function toggleMusic() {
 
 function launchGame() {
   state.username = usernameInput.value.trim() || 'Rift';
-  state.roomId = roomIdInput.value.trim() || 'forest-squad';
+  state.roomId = roomIdInput.value.trim().toLowerCase() || 'forest-squad';
   state.difficulty = difficultySelect.value;
+
+  document.getElementById('active-room-code').innerText = state.roomId.toUpperCase();
 
   try {
     firebase.initializeApp(FIREBASE_CREDENTIALS);
     state.db = firebase.database();
     state.isFirebaseActive = true;
-    console.log("Firebase connected to region asia-southeast1 successfully!");
+    console.log("Firebase connected successfully!");
   } catch (e) {
-    console.warn("Firebase already initialized or running locally.");
+    console.warn("Firebase already initialized.");
   }
 
   setupOverlay.classList.add('hidden');
@@ -128,7 +130,7 @@ function launchGame() {
 }
 
 // -------------------------------------------------------------
-// 3D GRAPHICS & WORLD SETUP
+// 3D GRAPHICS & DENSE FOREST SETUP
 // -------------------------------------------------------------
 function initEngine() {
   scene = new THREE.Scene();
@@ -206,31 +208,32 @@ function buildTerrain() {
 }
 
 function buildForest() {
-  const trunkGeo = new THREE.CylinderGeometry(0.4, 0.6, 6, 8);
-  const foliageGeo = new THREE.ConeGeometry(3, 5, 8);
+  const trunkGeo = new THREE.CylinderGeometry(0.4, 0.7, 7, 8);
+  const foliageGeo = new THREE.ConeGeometry(3.5, 6, 8);
   const rockGeo = new THREE.DodecahedronGeometry(1.5, 1);
 
   const trunkMat = new THREE.MeshStandardMaterial({ color: 0x3d2616, roughness: 0.9 });
   const foliageMat = new THREE.MeshStandardMaterial({ color: 0x133b19, roughness: 0.8 });
   const rockMat = new THREE.MeshStandardMaterial({ color: 0x4f5451, roughness: 0.9 });
 
+  // Procedural Tree Generation
   for (let i = 0; i < CONFIG.numTrees; i++) {
-    const x = (Math.random() - 0.5) * (CONFIG.mapSize - 40);
-    const z = (Math.random() - 0.5) * (CONFIG.mapSize - 40);
-    if (Math.hypot(x, z) < 15) continue;
+    const x = (Math.random() - 0.5) * (CONFIG.mapSize - 30);
+    const z = (Math.random() - 0.5) * (CONFIG.mapSize - 30);
+    if (Math.hypot(x, z) < 10) continue; // Keep spawn area clear
 
     const treeGroup = new THREE.Group();
     treeGroup.position.set(x, 0, z);
 
     const trunk = new THREE.Mesh(trunkGeo, trunkMat);
-    trunk.position.y = 3;
+    trunk.position.y = 3.5;
     trunk.castShadow = true;
     treeGroup.add(trunk);
 
     for (let j = 0; j < 3; j++) {
       const foliage = new THREE.Mesh(foliageGeo, foliageMat);
-      foliage.position.y = 5 + j * 2.2;
-      foliage.scale.set(1 - j * 0.2, 1 - j * 0.2, 1 - j * 0.2);
+      foliage.position.y = 6 + j * 2.5;
+      foliage.scale.set(1 - j * 0.15, 1 - j * 0.15, 1 - j * 0.15);
       foliage.castShadow = true;
       treeGroup.add(foliage);
     }
@@ -240,10 +243,11 @@ function buildForest() {
     interactables.push(treeGroup);
   }
 
+  // Procedural Rock Generation
   for (let i = 0; i < CONFIG.numRocks; i++) {
-    const x = (Math.random() - 0.5) * (CONFIG.mapSize - 40);
-    const z = (Math.random() - 0.5) * (CONFIG.mapSize - 40);
-    if (Math.hypot(x, z) < 12) continue;
+    const x = (Math.random() - 0.5) * (CONFIG.mapSize - 30);
+    const z = (Math.random() - 0.5) * (CONFIG.mapSize - 30);
+    if (Math.hypot(x, z) < 8) continue;
 
     const rock = new THREE.Mesh(rockGeo, rockMat);
     rock.position.set(x, 0.8, z);
