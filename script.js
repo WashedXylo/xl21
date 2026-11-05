@@ -10,6 +10,17 @@ const CONFIG = {
   dayDurationSec: 300
 };
 
+// Your Firebase Configuration (Hardcoded)
+const FIREBASE_CREDENTIALS = {
+  apiKey: "AIzaSyCBV-K_SIJLrozRZ2v2ZkQSe9tTkHtrL1k",
+  authDomain: "forest-game-82fba.firebaseapp.com",
+  databaseURL: "https://forest-game-82fba-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "forest-game-82fba",
+  storageBucket: "forest-game-82fba.firebasestorage.app",
+  messagingSenderId: "510972700470",
+  appId: "1:510972700470:web:8d95fde2de455a7f793597"
+};
+
 const state = {
   roomId: 'forest-squad',
   playerId: 'player_' + Math.floor(Math.random() * 10000),
@@ -63,7 +74,6 @@ const startBtn = document.getElementById('start-btn');
 const usernameInput = document.getElementById('username-input');
 const roomIdInput = document.getElementById('room-id');
 const difficultySelect = document.getElementById('difficulty-select');
-const firebaseConfigInput = document.getElementById('firebase-config-input');
 const musicToggleBtn = document.getElementById('music-toggle-btn');
 const bgm = document.getElementById('bgm');
 let musicPlaying = false;
@@ -99,16 +109,13 @@ function launchGame() {
   state.roomId = roomIdInput.value.trim() || 'forest-squad';
   state.difficulty = difficultySelect.value;
 
-  const rawConfig = firebaseConfigInput.value.trim();
-  if (rawConfig) {
-    try {
-      const config = JSON.parse(rawConfig);
-      firebase.initializeApp(config);
-      state.db = firebase.database();
-      state.isFirebaseActive = true;
-    } catch (e) {
-      alert('Invalid Firebase Config JSON. Running in offline host mode.');
-    }
+  try {
+    firebase.initializeApp(FIREBASE_CREDENTIALS);
+    state.db = firebase.database();
+    state.isFirebaseActive = true;
+    console.log("Firebase connected to region asia-southeast1 successfully!");
+  } catch (e) {
+    console.warn("Firebase already initialized or running locally.");
   }
 
   setupOverlay.classList.add('hidden');
@@ -251,7 +258,6 @@ function buildForest() {
 }
 
 function spawnMobs() {
-  // Spawn roaming forest shadow mobs
   for (let i = 0; i < 8; i++) {
     const mobGroup = new THREE.Group();
     const bodyMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.5 });
@@ -344,7 +350,6 @@ function updateMovement(delta) {
 
   playerPos.addScaledVector(moveVector, speed * delta);
 
-  // Dynamic Headbob
   if (moveVector.length() > 0) {
     bobTimer += delta * (keys['ShiftLeft'] ? 14 : 9);
     camera.position.y = playerPos.y + Math.sin(bobTimer) * 0.08;
@@ -385,7 +390,6 @@ function updateMobs(delta) {
 
 function updateBoss(delta) {
   if (!bossActive || !callerBoss) return;
-  // Boss tracks player slowly ("he watches us")
   callerBoss.lookAt(playerPos.x, callerBoss.position.y, playerPos.z);
   const dir = new THREE.Vector3().subVectors(playerPos, callerBoss.position).normalize();
   callerBoss.position.addScaledVector(dir, delta * 1.5);
@@ -411,7 +415,6 @@ function updateDayNightCycle(time) {
   scene.background.copy(skyColor);
   fog.color.copy(skyColor);
 
-  // Trigger Boss at Nightfall
   if (isNight && !bossActive && state.difficulty !== 'easy') {
     spawnCallerBoss();
   }
@@ -448,7 +451,6 @@ function updateRaycasting() {
     }
   }
 
-  // Check boss hit
   if (bossActive && callerBoss) {
     const dist = callerBoss.position.distanceTo(playerPos);
     if (dist < 6) {
